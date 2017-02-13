@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Baza.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
+        <EntityType Name="Locations">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Measures">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Type" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Value" Type="float" Nullable="false" />
+          <Property Name="Time" Type="datetime" Nullable="false" />
+          <Property Name="Station_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Stations">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Location_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_LocationMeasuringStation">
+          <End Role="Locations" Type="Self.Locations" Multiplicity="1" />
+          <End Role="Stations" Type="Self.Stations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Locations">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Stations">
+              <PropertyRef Name="Location_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MeasuringStationMeasurement">
+          <End Role="Stations" Type="Self.Stations" Multiplicity="1" />
+          <End Role="Measures" Type="Self.Measures" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stations">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Measures">
+              <PropertyRef Name="Station_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="BazaStoreContainer">
+          <EntitySet Name="Locations" EntityType="Self.Locations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Measures" EntityType="Self.Measures" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Stations" EntityType="Self.Stations" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_LocationMeasuringStation" Association="Self.FK_LocationMeasuringStation">
+            <End Role="Locations" EntitySet="Locations" />
+            <End Role="Stations" EntitySet="Stations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MeasuringStationMeasurement" Association="Self.FK_MeasuringStationMeasurement">
+            <End Role="Stations" EntitySet="Stations" />
+            <End Role="Measures" EntitySet="Measures" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Baza" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
+        <EntityContainer Name="BazaMerenja" >
+          <EntitySet Name="Locations" EntityType="Baza.Location" />
+          <EntitySet Name="Measures" EntityType="Baza.Measure" />
+          <EntitySet Name="Stations" EntityType="Baza.Station" />
+          <AssociationSet Name="FK_LocationMeasuringStation" Association="Baza.FK_LocationMeasuringStation">
+            <End Role="Location" EntitySet="Locations" />
+            <End Role="Station" EntitySet="Stations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MeasuringStationMeasurement" Association="Baza.FK_MeasuringStationMeasurement">
+            <End Role="Station" EntitySet="Stations" />
+            <End Role="Measure" EntitySet="Measures" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Stations" Relationship="Baza.FK_LocationMeasuringStation" FromRole="Location" ToRole="Station" />
+        </EntityType>
+        <EntityType Name="Measure">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="Double" Nullable="false" />
+          <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Station" Relationship="Baza.FK_MeasuringStationMeasurement" FromRole="Measure" ToRole="Station" />
+        </EntityType>
+        <EntityType Name="Station">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Location" Relationship="Baza.FK_LocationMeasuringStation" FromRole="Station" ToRole="Location" />
+          <NavigationProperty Name="Measures" Relationship="Baza.FK_MeasuringStationMeasurement" FromRole="Station" ToRole="Measure" />
+        </EntityType>
+        <Association Name="FK_LocationMeasuringStation">
+          <End Type="Baza.Location" Role="Location" Multiplicity="1" />
+          <End Type="Baza.Station" Role="Station" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_MeasuringStationMeasurement">
+          <End Type="Baza.Station" Role="Station" Multiplicity="1" />
+          <End Type="Baza.Measure" Role="Measure" Multiplicity="*" />
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="urn:schemas-microsoft-com:windows:storage:mapping:CS">
+  <EntityContainerMapping StorageEntityContainer="BazaStoreContainer" CdmEntityContainer="BazaMerenja">
+          <EntitySetMapping Name="Locations">
+            <EntityTypeMapping TypeName="Baza.Location">
+              <MappingFragment StoreEntitySet="Locations">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Measures">
+            <EntityTypeMapping TypeName="Baza.Measure">
+              <MappingFragment StoreEntitySet="Measures">
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Stations">
+            <EntityTypeMapping TypeName="Baza.Station">
+              <MappingFragment StoreEntitySet="Stations">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="FK_LocationMeasuringStation" TypeName="Baza.FK_LocationMeasuringStation" StoreEntitySet="Stations">
+            <EndProperty Name="Station">
+              <ScalarProperty Name="Id" ColumnName="Id" />
+            </EndProperty>
+            <EndProperty Name="Location">
+              <ScalarProperty Name="Id" ColumnName="Location_Id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_MeasuringStationMeasurement" TypeName="Baza.FK_MeasuringStationMeasurement" StoreEntitySet="Measures">
+            <EndProperty Name="Measure">
+              <ScalarProperty Name="Id" ColumnName="Id" />
+            </EndProperty>
+            <EndProperty Name="Station">
+              <ScalarProperty Name="Id" ColumnName="Station_Id" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2007/06/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="False" />
+        <DesignerProperty Name="UseLegacyProvider" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="Model1" >
+        <EntityTypeShape EntityType="Baza.Location" Width="1.5" PointX="0.75" PointY="1.125" />
+        <EntityTypeShape EntityType="Baza.Measure" Width="1.5" PointX="5.25" PointY="0.875" />
+        <EntityTypeShape EntityType="Baza.Station" Width="1.5" PointX="3" PointY="1" />
+        <AssociationConnector Association="Baza.FK_LocationMeasuringStation" />
+        <AssociationConnector Association="Baza.FK_MeasuringStationMeasurement" />
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>
